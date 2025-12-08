@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-runner
+  namespace: gitlab-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab-runner
+  template:
+    metadata:
+      labels:
+        app: gitlab-runner
+    spec:
+      serviceAccountName: gitlab-runner
+      containers:
+      - name: gitlab-runner
+        image: gitlab/gitlab-runner:latest
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: config
+          mountPath: /etc/gitlab-runner
+        - name: containers-storage
+          mountPath: /var/lib/containers
+        - name: run-storage
+          mountPath: /run
+      volumes:
+      - name: config
+        configMap:
+          name: gitlab-runner-config
+      - name: containers-storage
+        emptyDir: {}
+      - name: run-storage
+        emptyDir: {}

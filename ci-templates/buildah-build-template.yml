@@ -1,0 +1,13 @@
+.build_image_template:
+  image: quay.io/buildah/stable
+  variables:
+    STORAGE_DRIVER: vfs
+    BUILDAH_FORMAT: docker
+  script:
+    - echo "Logging into registry..."
+    - buildah login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - echo "Building image $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+    - buildah bud -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
+    - echo "Pushing image..."
+    - buildah push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+    - echo "Build and push complete."

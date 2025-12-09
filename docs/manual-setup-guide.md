@@ -13,10 +13,10 @@ This guide provides a step-by-step walkthrough to stand up the Local Platform La
 
 **Command:**
 ```bash
-minikube start --driver=docker --arch=arm64
+minikube start --driver=docker
 ```
 **Why?**
-We typically use the `docker` driver on macOS to run Kubernetes inside a container. The `--arch=arm64` flag ensures that the Minikube VM matches the Apple Silicon architecture, preventing performance emulation issues.
+We typically use the `docker` driver on macOS to run Kubernetes inside a container.
 
 ---
 

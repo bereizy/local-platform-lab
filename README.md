@@ -20,7 +20,7 @@ This repository provides the infrastructure-as-code (Kubernetes manifests) and d
 
 1.  **Start Minikube**:
     ```bash
-    minikube start --driver=docker --arch=arm64
+    minikube start --driver=docker
     ```
 
 2.  **Configure & Apply**:

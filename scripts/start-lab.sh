@@ -5,7 +5,7 @@ echo "🚀 Starting Local Platform Lab..."
 
 # 1. Start Minikube
 # We use existing profile if present, preserving data/PVCs
-minikube start --driver=docker --arch=arm64
+minikube start --driver=docker
 
 # 2. Ensure Registry is up
 echo "📦 Verifying Registry..."

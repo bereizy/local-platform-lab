@@ -3,11 +3,12 @@
   variables:
     STORAGE_DRIVER: vfs
     BUILDAH_FORMAT: docker
+    TLS_VERIFY: "true"  # Set to "false" for local/insecure registries
   script:
     - echo "Logging into registry..."
-    - buildah login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - buildah login --tls-verify=$TLS_VERIFY -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - echo "Building image $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-    - buildah bud -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
+    - buildah bud --tls-verify=$TLS_VERIFY -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
     - echo "Pushing image..."
-    - buildah push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+    - buildah push --tls-verify=$TLS_VERIFY "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
     - echo "Build and push complete."

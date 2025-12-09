@@ -18,14 +18,39 @@
     2. Check that the ConfigMap correctly defines the `[runners.kubernetes.volumes]` for `containers-storage` mounting to `/var/lib/containers`.
     3. Ensure `STORAGE_DRIVER` variable is set to `vfs` in the CI job if overlayfs gives issues on the specific kernel.
 
-### Harbor Authentication
--   **Symptom**: `buildah login` fails or push fails with 401.
+### Registry / Image Push Issues
+-   **Symptom**: `x509: certificate signed by unknown authority` or `http: server gave HTTP response to HTTPS client`.
 -   **Fix**:
-    1. Manually test credentials:
+    1. The Minikube registry is **insecure (HTTP)**.
+    2. Ensure your `buildah` command uses the flag `--tls-verify=false`.
+    3. Ensure your CI variable `TLS_VERIFY` is set to `"false"`.
+    4. Verify the registry is actually running:
        ```bash
-       docker login <HARBOR_URL> -u <USER> -p <PASS>
+       kubectl get pods -n kube-system -l kubernetes.io/minikube-addons=registry
        ```
-    2. Ensure the `harbor-cred` secret exists in the application namespace if you are pulling images, or that the CI variables `$CI_REGISTRY_USER` and `$CI_REGISTRY_PASSWORD` are correct in GitLab settings.
+
+### Keycloak Not Accessible (Connection Refused)
+-   **Symptom**: Browsing to `http://127.0.0.1:8080` fails.
+-   **Fix**:
+    1. **Minikube Tunnel**: The LoadBalancer service requires a tunnel to bind to your Mac's localhost.
+       Run this in a separate terminal and keep it open:
+       ```bash
+       minikube tunnel
+       ```
+    2. **Check Password Required**: `minikube tunnel` requires `sudo` privileges and will ask for your Mac password.
+
+### Postgres Connection Failures
+-   **Symptom**: App containers cannot connect to DB `postgres.platform.svc.cluster.local`.
+-   **Fix**:
+    1. Check if the Platform namespace pods are running:
+       ```bash
+       kubectl get pods -n platform
+       ```
+    2. Verify DNS resolution from within the app pod:
+       ```bash
+       nslookup postgres.platform.svc.cluster.local
+       ```
+    3. Verify credentials (default is `appuser`/`apppassword` for the application database).
 
 ### Minikube Networking
 -   **Symptom**: Runner cannot reach GitLab or Harbor.
@@ -42,9 +67,12 @@
 # Check all pods in runner namespace
 kubectl get pods -n gitlab-runner -o wide
 
+# Check platform services (Keycloak/DB)
+kubectl get pods -n platform
+
 # view runner logs
 kubectl logs -l app=gitlab-runner -n gitlab-runner --tail=100 -f
 
-# Describe pod to see mount/permission issues
-kubectl describe pod <pod-name> -n gitlab-runner
+# Check Minikube Tunnel Status
+ps aux | grep "minikube tunnel"
 ```

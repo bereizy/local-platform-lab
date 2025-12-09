@@ -92,6 +92,13 @@ sudo minikube tunnel
 **Why?**
 Keycloak is exposed as a `LoadBalancer` service. In a real cloud (AWS/GCP), this gives you a Public IP. On Minikube, the "LoadBalancer" stays in "Pending" state forever unless you run `minikube tunnel`. This command creates a network route from your Mac's `localhost` to the Service inside the cluster.
 
+**Alternative (No Sudo Access):**
+If `minikube tunnel` fails because you lack administrative privileges, use `kubectl port-forward` instead:
+```bash
+kubectl port-forward -n platform svc/keycloak 8080:8080
+```
+This achieves the same result for accessing Keycloak, though it doesn't assign an External IP to the service itself.
+
 ---
 
 ## Step 6: Validation

@@ -31,9 +31,14 @@ graph TB
         end
     end
 
-    %% External Access via Tunnel
-    Browser --"http://localhost:8080"--> Tunnel
+    %% External Access via Tunnel OR Port Forward
+    Browser --"http://localhost:8080"--> HostAccess
+    HostAccess{"Access Method"}
+    HostAccess --"Sudo"--> Tunnel
+    HostAccess --"No Sudo"--> PortForward["kubectl port-forward"]
+
     Tunnel --"Forwarding"--> KeycloakSVC
+    PortForward --"Forwarding"--> KeycloakSVC
     KeycloakSVC --"TargetPort: 8080"--> KeycloakPod
 
     %% Internal Service Communication

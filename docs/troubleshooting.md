@@ -38,6 +38,13 @@
        minikube tunnel
        ```
     2. **Check Password Required**: `minikube tunnel` requires `sudo` privileges and will ask for your Mac password.
+       
+    **Workaround (No Sudo):**
+    If you do not have sudo access, use `kubectl port-forward` instead of tunnel:
+    ```bash
+    kubectl port-forward -n platform svc/keycloak 8080:8080
+    ```
+    This will also make Keycloak available at `http://localhost:8080`.
 
 ### Postgres Connection Failures
 -   **Symptom**: App containers cannot connect to DB `postgres.platform.svc.cluster.local`.

@@ -1,0 +1,44 @@
+## Configuration for GitLab Runner Helm Chart
+## Usage: helm install --namespace gitlab-runner gitlab-runner -f helm/values.yaml gitlab/gitlab-runner
+
+gitlabUrl: https://gitlab.com/
+runnerRegistrationToken: "YOUR_REGISTRATION_TOKEN_HERE"
+
+## Configure the Runner to run in Minikube/Kubernetes
+runners:
+  ## The image to use if the .gitlab-ci.yml doesn't specify one
+  image: "quay.io/buildah/stable"
+  
+  ## Privileged mode is REQUIRED for Buildah to build images without a daemon
+  privileged: true
+
+  ## Namespace to run the jobs in
+  namespace: "gitlab-runner"
+
+  ## Configuration injected into config.toml
+  config: |
+    [[runners]]
+      [runners.kubernetes]
+        image = "quay.io/buildah/stable"
+        privileged = true
+        
+        # Mount emptyDir volumes for Buildah storage (ephemeral)
+        # 1. /var/lib/containers: Where images/layers are stored
+        [[runners.kubernetes.volumes.empty_dir]]
+          name = "containers-storage"
+          mount_path = "/var/lib/containers"
+        
+        # 2. /run: Runtime state
+        [[runners.kubernetes.volumes.empty_dir]]
+          name = "run-storage"
+          mount_path = "/run"
+
+## RBAC Support
+rbac:
+  create: true
+  
+## Run the runner pod itself as non-root (security best practice), 
+## though the job pods (Buildah) will be privileged.
+securityContext:
+  runAsUser: 100
+  fsGroup: 65533

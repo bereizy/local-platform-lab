@@ -16,7 +16,21 @@ This repository provides the infrastructure-as-code (Kubernetes manifests) and d
 3.  **Kubectl**: `brew install kubectl`
 4.  **Helm** (optional)
 
-## High-Level Usage
+
+### Deployment Options
+
+You can install the GitLab Runner using one of two methods:
+
+**Option A: The Learning Path (Manual Manifests)**
+Great for understanding Kubernetes concepts (ConfigMaps, Deployments, RBAC) deeply.
+-   Follow [docs/manual-setup-guide.md](docs/manual-setup-guide.md).
+
+**Option B: The Standard Path (Helm Chart)**
+Uses the official GitLab Helm Chart. Best for mirroring production setups.
+-   Follow [docs/setup-with-helm.md](docs/setup-with-helm.md).
+
+## Quick Start (Automated Script)
+The provided script uses the **Manual Manifest** strategy by default to ensure transparency.
 
 1.  **Start Minikube**:
     ```bash

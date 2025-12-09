@@ -20,19 +20,46 @@ if [ -d "manifests/platform" ]; then
     kubectl apply -f manifests/platform/
 fi
 
-# GitLab Runner (Namespace, RBAC, Config, Deployment)
-kubectl apply -f manifests/namespace.yaml
-kubectl apply -f manifests/rbac.yaml
+# 4. Deploy GitLab Runner
+echo ""
+echo "❓ How would you like to deploy the GitLab Runner?"
+echo "   1) Manual Manifests (Great for learning k8s internals)"
+echo "   2) Helm Chart (Standard production approach - Requires Helm installed)"
+echo "   3) Skip Runner Deployment (I will do it manually later)"
+read -p "   Select [1-3]: " RUNNER_CHOICE
 
-# Only apply runner deployment/config if they exist (they should)
-if [ -f "manifests/gitlab-runner-configmap.yaml" ]; then
-    kubectl apply -f manifests/gitlab-runner-configmap.yaml
-fi
-if [ -f "manifests/gitlab-runner-deployment.yaml" ]; then
-    kubectl apply -f manifests/gitlab-runner-deployment.yaml
-fi
+case $RUNNER_CHOICE in
+    1)
+        echo "📄 Applying Kubernetes Manifests for Runner..."
+        kubectl apply -f manifests/namespace.yaml
+        kubectl apply -f manifests/rbac.yaml
+        
+        if [ -f "manifests/gitlab-runner-configmap.yaml" ]; then
+            kubectl apply -f manifests/gitlab-runner-configmap.yaml
+        fi
+        if [ -f "manifests/gitlab-runner-deployment.yaml" ]; then
+            kubectl apply -f manifests/gitlab-runner-deployment.yaml
+        fi
+        ;;
+    2)
+        echo "⎈ Deploying via Helm..."
+        if ! command -v helm &> /dev/null; then
+            echo "❌ Helm not found. Please install helm first (brew install helm)."
+        else
+            helm repo add gitlab https://charts.gitlab.io
+            helm repo update
+            # Ensure namespace
+            kubectl create namespace gitlab-runner --dry-run=client -o yaml | kubectl apply -f -
+            # Upgrade/Install
+            helm upgrade --install gitlab-runner gitlab/gitlab-runner --namespace gitlab-runner -f helm/values.yaml
+        fi
+        ;;
+    *)
+        echo "⏭️  Skipping Runner Deployment."
+        ;;
+esac
 
-# 4. Final Status
+# 5. Final Status
 echo ""
 echo "✅ Lab Environment is Ready!"
 echo "---------------------------------------------------"

@@ -85,19 +85,13 @@ kubectl apply -f manifests/gitlab-runner-deployment.yaml
 
 **Command:**
 ```bash
-sudo minikube tunnel
+kubectl port-forward -n platform svc/keycloak 8080:8080
 ```
 *(Keep this terminal open)*
 
 **Why?**
-Keycloak is exposed as a `LoadBalancer` service. In a real cloud (AWS/GCP), this gives you a Public IP. On Minikube, the "LoadBalancer" stays in "Pending" state forever unless you run `minikube tunnel`. This command creates a network route from your Mac's `localhost` to the Service inside the cluster.
-
-**Alternative (No Sudo Access):**
-If `minikube tunnel` fails because you lack administrative privileges, use `kubectl port-forward` instead:
-```bash
-kubectl port-forward -n platform svc/keycloak 8080:8080
-```
-This achieves the same result for accessing Keycloak, though it doesn't assign an External IP to the service itself.
+Keycloak is running inside the isolated Kubernetes network. To access its web interface from your Mac (Host), we need to forward traffic from your local port `8080` to the service's port `8080` inside the cluster.
+*(Note: Unlike `minikube tunnel`, this does not require administrative `sudo` privileges)*.
 
 ---
 

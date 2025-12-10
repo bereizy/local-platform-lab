@@ -32,19 +32,12 @@
 ### Keycloak Not Accessible (Connection Refused)
 -   **Symptom**: Browsing to `http://127.0.0.1:8080` fails.
 -   **Fix**:
-    1. **Minikube Tunnel**: The LoadBalancer service requires a tunnel to bind to your Mac's localhost.
+    1. **Port Forwarding Required**: The Keycloak service is isolated inside the cluster. You must forward a local port to access it.
        Run this in a separate terminal and keep it open:
        ```bash
-       minikube tunnel
+       kubectl port-forward -n platform svc/keycloak 8080:8080
        ```
-    2. **Check Password Required**: `minikube tunnel` requires `sudo` privileges and will ask for your Mac password.
-       
-    **Workaround (No Sudo):**
-    If you do not have sudo access, use `kubectl port-forward` instead of tunnel:
-    ```bash
-    kubectl port-forward -n platform svc/keycloak 8080:8080
-    ```
-    This will also make Keycloak available at `http://localhost:8080`.
+    2. **Check Port Conflicts**: Ensure no other service (like a local Tomcat or Jenkins) is already using port 8080 on your Mac.
 
 ### Postgres Connection Failures
 -   **Symptom**: App containers cannot connect to DB `postgres.platform.svc.cluster.local`.

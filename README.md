@@ -30,18 +30,36 @@ Uses the official GitLab Helm Chart. Best for mirroring production setups.
 -   Follow [docs/setup-with-helm.md](docs/setup-with-helm.md).
 
 ## Quick Start (Automated Script)
-The provided script uses the **Manual Manifest** strategy by default to ensure transparency.
+The provided script is interactive and handles the heavy lifting.
 
-1.  **Start Minikube**:
-    ```bash
-    minikube start --driver=docker
-    ```
+```bash
+chmod +x scripts/start-lab.sh
+./scripts/start-lab.sh
+```
 
-2.  **Configure & Apply**:
-    -   Edit `manifests/gitlab-runner-configmap.yaml` with your GitLab Runner Registration Token.
-    -   Apply all manifests: `kubectl apply -f manifests/` (ensure you create the namespace first via `manifests/namespace.yaml`).
+## Documentation Index
 
-3.  **Define Pipeline**:
-    -   Use the templates in `ci-templates/` in your project's `.gitlab-ci.yml` to start building with Buildah.
+**Foundation**
+*   [Platform Architecture & Context](docs/platform-context.md) - **Start Here**. What are we building?
+*   [Network Architecture](docs/network-diagram.md) - Topology and Port Mappings.
+*   [Iterative Design Philosophy](docs/iterative-design-philosophy.md) - **Required Reading**. Why we build layer-by-layer.
 
-See [docs/implementation.md](docs/implementation.md) for the detailed step-by-step setup guide.
+**Guides**
+*   [Manual Setup Guide](docs/manual-setup-guide.md) - The "Hard Way" (Deep Learning).
+*   [Helm Setup Guide](docs/setup-with-helm.md) - The "Standard Way" (Production style).
+*   [MVP Registry Setup](docs/mvp-registry-setup.md) - Using the internal Minikube registry.
+*   [Host-Based Harbor](docs/harbor-host-setup.md) - Using a full Enterprise Registry (Optional).
+
+**Advanced & Operations**
+*   [Automated Keycloak Import](docs/advanced-keycloak-import.md) - Configuration as Code for Identity.
+*   [Advanced Roadmap](docs/advanced-roadmap.md) - Next steps (Ingress, GitOps, Policies).
+*   [Troubleshooting](docs/troubleshooting.md) - Common issues and fixes.
+*   [Mentor Guide](docs/mentor-guide.md) - For instructors (Pedagogy & Teaching Points).
+
+## Project Structure
+*   `manifests/`: Raw Kubernetes YAML files.
+*   `helm/`: Values file for Helm deployments.
+*   `functions/`: Helper scripts (if applicable).
+*   `ci-templates/`: Copy-pasteable GitLab CI jobs for Buildah.
+
+See [docs/implementation.md](docs/implementation.md) for the original implementation notes.
